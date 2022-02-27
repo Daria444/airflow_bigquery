@@ -1,0 +1,15 @@
+docker container exec -it airflow_postgres_1 bash
+psql -U airflow -W airflow
+
+
+CREATE MATERIALIZED VIEW  IF NOT EXISTS mat_view AS 
+SELECT
+	users.email as email, 
+	SUM(price) as refill
+FROM users 
+JOIN webinar
+ON users.email = webinar.email
+JOIN transactions
+ON users.user_id = transactions.user_id
+GROUP BY users.email
+HAVING MIN(date_registration) > '2016-04-01';
